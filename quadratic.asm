@@ -41,7 +41,7 @@ segment .data
 outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
 input_coeff db "Please enter the three floating point coefficients of a quadratic equation in the order a, b, c separated by white spaces. Then press enter: ", 10, 0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
-
+output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 
 input_c db "%lf%lf%lf", 0
 
@@ -125,9 +125,16 @@ movsd xmm14, xmm11
 divsd xmm12, xmm5
 movsd xmm15, xmm12
 
-;Display Exit Message
+;Display Exit Message 1 
 mov rax,0
 mov rdi, output_equation
+call printf
+pop rax
+
+;Display Exit Message 2
+;Display Exit Message
+mov rax,0
+mov rdi, output_returncaller
 call printf
 pop rax
 
