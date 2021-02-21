@@ -1,11 +1,17 @@
 #include <stdio.h>
 #include <quad_library.cpp>
 
+
 //isfloat
 
 int(int argv, char argv[]){
-	double quark;
-	int neu; 
+	double q_a, q_b;
+	int n_a, n_b; 
 	
-	if 
+	if (){
+	}
+	else {
+	}
+	
+	return 0;
 }
