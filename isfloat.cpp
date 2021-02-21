@@ -4,5 +4,8 @@
 //isfloat
 
 int(int argv, char argv[]){
-
+	double quark;
+	int neu; 
+	
+	if 
 }

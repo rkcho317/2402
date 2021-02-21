@@ -1,0 +1,168 @@
+     1                                  ;****************************************************************************************************************************
+     2                                  ;Program name: "Quadratic".  This program demonstrates the 
+     3                                  ;
+     4                                  ; Copyright (C) 2021 Rosa Cho.                                                                           *
+     5                                  ;                                                                                                                           *
+     6                                  ;This file is part of the software program "Quadratics".                                                                   *
+     7                                  ;Quadratics is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License   *
+     8                                  ;version 3 as published by the Free Software Foundation.                                                                    *
+     9                                  ;Quadratics is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied          *
+    10                                  ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
+    11                                  ;A copy of the GNU General Public License v3 is available here:  <https:;www.gnu.org/licenses/>.                            *
+    12                                  ;****************************************************************************************************************************
+    13                                  
+    14                                  ;Author information
+    15                                  ;  Author name: Rosa Cho
+    16                                  ;  Author email: rkcho317@csu.fullerton.edu
+    17                                  ;
+    18                                  ;Program information
+    19                                  ;  Program name: Quadratics
+    20                                  ;  Programming languages: Four modules in C and one module in X86
+    21                                  ;  Date program began: 2021-Feb-18
+    22                                  ;  Date of last update: 2021-Feb-20
+    23                                  ;  Files in this program: second_degree.cpp, quad_library.cpp, isfloat.cpp, isdigit.cpp, quadratic.asm
+    24                                  ;  Status: In-progress
+    25                                  ;
+    26                                  ;This file
+    27                                  ;   File name: quadratic.asm
+    28                                  ;   Language: X86 with Intel syntax.
+    29                                  ;   Max page width: 
+    30                                  ;   Assemble: nasm -f elf64 -l quadratic.lis -o quadratic.o quadratic.asm
+    31                                  
+    32                                  
+    33                                  extern printf
+    34                                  
+    35                                  extern scanf
+    36                                  
+    37                                  global quads
+    38                                  
+    39                                  segment .data
+    40                                  
+    41 00000000 546869732070726F67-     outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
+    42 00000009 72616D2077696C6C20-
+    43 00000012 66696E642074686520-
+    44 0000001B 726F6F7473206F6620-
+    45 00000024 746865207175616472-
+    46 0000002D 617469632065717561-
+    47 00000036 74696F6E200A00     
+    48 0000003D 506C6561736520656E-     input_coeff db "Please enter the three floating point coefficients of a quadratic equation in the order a, b, c separated by white spaces. Then press enter: ", 10, 0
+    49 00000046 746572207468652074-
+    50 0000004F 6872656520666C6F61-
+    51 00000058 74696E6720706F696E-
+    52 00000061 7420636F6566666963-
+    53 0000006A 69656E7473206F6620-
+    54 00000073 612071756164726174-
+    55 0000007C 696320657175617469-
+    56 00000085 6F6E20696E20746865-
+    57 0000008E 206F7264657220612C-
+    58 00000097 20622C206320736570-
+    59 000000A0 617261746564206279-
+    60 000000A9 207768697465207370-
+    61 000000B2 616365732E20546865-
+    62 000000BB 6E2070726573732065-
+    63 000000C4 6E7465723A200A00   
+    64 000000CC 5468616E6B20796F75-     output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
+    65 000000D5 2E2054686520657175-
+    66 000000DE 6174696F6E20697320-
+    67 000000E7 25352E336C6620785E-
+    68 000000F0 32202B2025352E336C-
+    69 000000F9 662078202B2025352E-
+    70 00000102 336C66203D20302E30-
+    71 0000010B 0A00               
+    72                                  
+    73                                  
+    74 0000010D 256C66256C66256C66-     input_c db "%lf%lf%lf", 0
+    75 00000116 00                 
+    76                                  
+    77                                  segment .bss
+    78                                  
+    79                                  segment .text
+    80                                  
+    81                                  quads:
+    82                                  
+    83 00000000 6A00                    push qword 0
+    84                                  
+    85                                  ;Display Welcome Message
+    86 00000002 B800000000              mov rax,0
+    87 00000007 48BF-                   mov rdi, outputpurpose
+    88 00000009 [0000000000000000] 
+    89 00000011 E8(00000000)            call printf
+    90 00000016 58                      pop rax
+    91                                  
+    92                                  ;Display User Input Message 
+    93 00000017 B800000000              mov rax,0
+    94 0000001C 48BF-                   mov rdi, input_coeff
+    95 0000001E [3D00000000000000] 
+    96 00000026 E8(00000000)            call printf
+    97 0000002B 58                      pop rax
+    98                                  
+    99                                  ;Accept input of three numbers for the quadratic formula
+   100 0000002C 6AFF                    push qword -1
+   101 0000002E 6AFE                    push qword -2
+   102 00000030 6AFD                    push qword -3
+   103 00000032 B800000000              mov rax, 0
+   104 00000037 48BF-                   mov rdi, input_c  
+   105 00000039 [0D01000000000000] 
+   106 00000041 4889E6                  mov rsi, rsp                   
+   107 00000044 4889E2                  mov rdx, rsp
+   108 00000047 4883C208                add rdx, 8                     
+   109 0000004B 4889E1                  mov rcx, rsp
+   110 0000004E 4883C110                add rcx, 16                   
+   111 00000052 E8(00000000)            call scanf
+   112 00000057 F20F102C24              movsd xmm5, [rsp]
+   113 0000005C F20F10742408            movsd xmm6, [rsp+8]
+   114 00000062 F20F107C2410            movsd xmm7, [rsp+16]
+   115 00000068 58                      pop rax                        
+   116 00000069 58                      pop rax                        
+   117 0000006A 58                      pop rax   
+   118                                  
+   119                                  ;Calculate the quadratic formula
+   120                                  
+   121                                  ;a * c 
+   122 0000006B F2440F10C5              movsd xmm8, xmm5
+   123 00000070 F2440F59C7              mulsd xmm8, xmm7
+   124                                  
+   125                                  ;4*ac
+   126 00000075 F30F5A1C2504000000      cvtss2sd xmm3, dword [4]
+   127 0000007E F2440F59C3              mulsd xmm8, xmm3
+   128                                  
+   129                                  ;b^2
+   130 00000083 F20F59F6                mulsd xmm6, xmm6
+   131                                  
+   132                                  ;b^2 - 4ac
+   133 00000087 F2440F10CE              movsd xmm9, xmm6
+   134 0000008C F2450F5CC8              subsd xmm9, xmm8
+   135                                  
+   136                                  ;sqrtd(b^2-4ac)
+   137 00000091 F2450F51D1              sqrtsd xmm10, xmm9
+   138                                  
+   139                                  ;sqrtd(b^2-4ac) - b
+   140 00000096 F2450F10DA              movsd xmm11, xmm10
+   141 0000009B F2440F5CDE              subsd xmm11, xmm6
+   142                                  
+   143                                  ;sqrtd(b^2-4ac) + b
+   144 000000A0 F2450F10E2              movsd xmm12, xmm10
+   145 000000A5 F2440F58E6              addsd xmm12, xmm6
+   146                                  
+   147                                  ;2a
+   148 000000AA F30F5A242502000000      cvtss2sd xmm4, dword [2]
+   149 000000B3 F20F59EC                mulsd xmm5, xmm4
+   150 000000B7 F2440F10ED              movsd xmm13, xmm5
+   151                                  
+   152                                  ;root 1 = (sqrtd(b^2-4ac) - b) / 2a
+   153 000000BC F2450F5EDD              divsd xmm11, xmm13
+   154 000000C1 F2450F10F3              movsd xmm14, xmm11
+   155                                  
+   156                                  ;root 2 = (sqrtd(b^2-4ac) + b) / 2a
+   157 000000C6 F2440F5EE5              divsd xmm12, xmm5
+   158 000000CB F2450F10FC              movsd xmm15, xmm12
+   159                                  
+   160                                  ;Display Exit Message
+   161 000000D0 B800000000              mov rax,0
+   162 000000D5 48BF-                   mov rdi, output_equation
+   163 000000D7 [CC00000000000000] 
+   164 000000DF E8(00000000)            call printf
+   165 000000E4 58                      pop rax
+   166                                  
+   167 000000E5 F2410F10C6              movsd xmm0, xmm14
+   168 000000EA F2410F10CF              movsd xmm1, xmm15
