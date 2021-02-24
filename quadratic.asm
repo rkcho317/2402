@@ -47,7 +47,7 @@ output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 invalidRoot db "invalid root", 10,0
 
-input_c db "%lf%lf%lf", 0
+input_c db "%s%s%s", 0
 
 segment .bss
 
@@ -81,12 +81,6 @@ add rdx, 8
 mov rcx, rsp
 add rcx, 16
 call scanf
-;movsd xmm5, [rsp]
-;movsd xmm6, [rsp+8]
-;movsd xmm7, [rsp+16]
-;pop rax
-;pop rax
-;pop rax
 
 ;Implement isfloat.cpp
 mov rax, 0
@@ -95,13 +89,13 @@ call isfloat
 cmp rax, 0
 je invalidRoot
 
-mov rdi, rsp
+mov rdi, [rsp+8]
 mov rax, 0
 call isfloat
 cmp rax, 0
 je invalidRoot
 
-mov rdi, rsp
+mov rdi, [rsp+16]
 mov rax, 0
 call isfloat
 cmp rax, 0
