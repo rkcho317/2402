@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstring>
 #include "quad_library.cpp"
+#include "isfloat.cpp"
 
 extern double quads();
 

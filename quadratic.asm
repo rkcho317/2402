@@ -34,6 +34,12 @@ extern printf
 
 extern scanf
 
+extern  isfloat
+
+extern second_degree
+
+extern  quad_library
+
 global quads
 
 segment .data
@@ -42,6 +48,7 @@ outputpurpose db "This program will find the roots of the quadratic equation ", 
 input_coeff db "Please enter the three floating point coefficients of a quadratic equation in the order a, b, c separated by white spaces. Then press enter: ", 10, 0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
+invalidRoot db "invalid root", 10,0
 
 input_c db "%lf%lf%lf", 0
 
@@ -83,6 +90,25 @@ movsd xmm7, [rsp+16]
 pop rax                        
 pop rax                        
 pop rax   
+
+;Implement isfloat.cpp
+mov rdi, rsp
+mov rax, 0
+call isfloat
+cmp rax, 0
+je invalidRoot
+
+;mov rdi, rsp
+;mov rax, 0
+;call isfloat
+;cmp rax, 0
+;je invalidRoot
+
+;mov rdi, rsp
+;mov rax, 0
+;call isfloat
+;cmp rax, 0
+;je invalid
 
 ;Calculate the quadratic formula
 

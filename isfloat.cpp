@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <iostream>
+#include "isdigit.cpp"
 
-#include <isdigit.cpp>
-
+extern "C" bool isfloat(char []);
 
 //isfloat
 /*The plan is save the input as a string, 
@@ -13,14 +13,18 @@ Then call is float and look for that one “.”,
 which is silly because it seems we can do that in isDigit(). 
 If it returns a 1, we turn that string into a float in the .asm file*/
 
-int(int argv, char argv[]){
-	double q_a, q_b;
-	int n_a, n_b; 
-	
-	if (){
-	}
-	else {
-	}
-	
-	return 0;
+bool isfloat(char a[]){
+	bool result = true;
+    bool b_result = false;
+    int start = 0;
+    if (a[0] == '-' || a[0] == '+') start = 1;
+    unsigned long int k = start;
+    while (!(a[k] == '\0') && result )
+    {    if (a[k] == '.' && !b_result) 
+               b_result = true;
+         else
+               result = result && isdigit(a[k]) ; 
+         k++;
+     }
+     return result && b_result;
 }
