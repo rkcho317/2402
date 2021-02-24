@@ -1,5 +1,5 @@
 ;****************************************************************************************************************************
-;Program name: "Quadratic".  This program demonstrates the 
+;Program name: "Quadratic".  This program demonstrates the
 ;
 ; Copyright (C) 2021 Rosa Cho.                                                                           *
 ;                                                                                                                           *
@@ -26,18 +26,15 @@
 ;This file
 ;   File name: quadratic.asm
 ;   Language: X86 with Intel syntax.
-;   Max page width: 
+;   Max page width:
 ;   Assemble: nasm -f elf64 -l quadratic.lis -o quadratic.o quadratic.asm
 
 
 extern printf
-
 extern scanf
-
+extern atol
+extern stol
 extern  isfloat
-
-extern second_degree
-
 extern  quad_library
 
 global quads
@@ -55,7 +52,6 @@ input_c db "%lf%lf%lf", 0
 segment .bss
 
 segment .text
-
 quads:
 
 push qword 0
@@ -66,7 +62,8 @@ mov rdi, outputpurpose
 call printf
 pop rax
 
-;Display User Input Message 
+;Display User Input Message
+push qword 99
 mov rax,0
 mov rdi, input_coeff
 call printf
@@ -77,92 +74,91 @@ push qword -1
 push qword -2
 push qword -3
 mov rax, 0
-mov rdi, input_c  
-mov rsi, rsp                   
+mov rdi, input_c
+mov rsi, rsp
 mov rdx, rsp
-add rdx, 8                     
+add rdx, 8
 mov rcx, rsp
-add rcx, 16                   
+add rcx, 16
 call scanf
-movsd xmm5, [rsp]
-movsd xmm6, [rsp+8]
-movsd xmm7, [rsp+16]
-pop rax                        
-pop rax                        
-pop rax   
+;movsd xmm5, [rsp]
+;movsd xmm6, [rsp+8]
+;movsd xmm7, [rsp+16]
+;pop rax
+;pop rax
+;pop rax
 
 ;Implement isfloat.cpp
+mov rax, 0
+mov rdi, rsp
+call isfloat
+cmp rax, 0
+je invalidRoot
+
 mov rdi, rsp
 mov rax, 0
 call isfloat
 cmp rax, 0
 je invalidRoot
 
-;mov rdi, rsp
-;mov rax, 0
-;call isfloat
-;cmp rax, 0
-;je invalidRoot
-
-;mov rdi, rsp
-;mov rax, 0
-;call isfloat
-;cmp rax, 0
-;je invalid
+mov rdi, rsp
+mov rax, 0
+call isfloat
+cmp rax, 0
+je invalidRoot
 
 ;Calculate the quadratic formula
 
-;a * c 
-movsd xmm8, xmm5
-mulsd xmm8, xmm7
+;a * c
+;movsd xmm8, xmm5
+;mulsd xmm8, xmm7
 
 ;4*ac
-cvtss2sd xmm3, dword [4]
-mulsd xmm8, xmm3
+;cvtss2sd xmm3, dword [4]
+;mulsd xmm8, xmm3
 
 ;b^2
-mulsd xmm6, xmm6
+;mulsd xmm6, xmm6
 
 ;b^2 - 4ac
-movsd xmm9, xmm6
-subsd xmm9, xmm8
+;movsd xmm9, xmm6
+;subsd xmm9, xmm8
 
 ;sqrtd(b^2-4ac)
-sqrtsd xmm10, xmm9
+;sqrtsd xmm10, xmm9
 
 ;sqrtd(b^2-4ac) - b
-movsd xmm11, xmm10
-subsd xmm11, xmm6
+;movsd xmm11, xmm10
+;subsd xmm11, xmm6
 
 ;sqrtd(b^2-4ac) + b
-movsd xmm12, xmm10
-addsd xmm12, xmm6
+;movsd xmm12, xmm10
+;addsd xmm12, xmm6
 
 ;2a
-cvtss2sd xmm4, dword [2]
-mulsd xmm5, xmm4
-movsd xmm13, xmm5
+;cvtss2sd xmm4, dword [2]
+;mulsd xmm5, xmm4
+;movsd xmm13, xmm5
 
 ;root 1 = (sqrtd(b^2-4ac) - b) / 2a
-divsd xmm11, xmm13
-movsd xmm14, xmm11
+;divsd xmm11, xmm13
+;movsd xmm14, xmm11
 
 ;root 2 = (sqrtd(b^2-4ac) + b) / 2a
-divsd xmm12, xmm5
-movsd xmm15, xmm12
+;divsd xmm12, xmm5
+;movsd xmm15, xmm12
 
-;Display Exit Message 1 
-mov rax,0
-mov rdi, output_equation
-call printf
-pop rax
+;Display Exit Message 1
+;mov rax,0
+;mov rdi, output_equation
+;call printf
+;pop rax
 
 ;Display Exit Message 2
-;Display Exit Message
-mov rax,0
-mov rdi, output_returncaller
-call printf
-pop rax
+;mov rax,0
+;mov rdi, output_returncaller
+;call printf
+;pop rax
 
-movsd xmm0, xmm14
-movsd xmm1, xmm15
+;movsd xmm0, xmm14
+;movsd xmm1, xmm15

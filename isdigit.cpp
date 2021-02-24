@@ -5,14 +5,16 @@
 
 bool isdigit(char in){
 char arr_a[10] = {0,1,2,3,4,5,6,7,8,9};
+bool res_1, res_0;
 
-	for (int i = 0; i<=10; i++){
-		if (in == i){
-		return 1;
+	for (int i = 0; i<= 10; i++){
+		if (in == arr_a[i]){
+		res_1=true;
 		}
 		else{
-		return 0;
+		res_0=false;
 		}
 	}
 
+	return res_1 && res_0;
 }
