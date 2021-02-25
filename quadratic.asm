@@ -32,8 +32,8 @@
 
 extern printf
 extern scanf
-extern atol
-extern stol
+extern atof
+extern stof
 extern  isfloat
 extern  quad_library
 
@@ -45,9 +45,11 @@ outputpurpose db "This program will find the roots of the quadratic equation ", 
 input_coeff db "Please enter the three floating point coefficients of a quadratic equation in the order a, b, c separated by white spaces. Then press enter: ", 10, 0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
-invalidRoot db "invalid root", 10,0
+error_message db "Incorrect input. Please try again", 10, 0
 
 input_c db "%s%s%s", 0
+output_three_float db "%lf%lf%lf",0
+
 
 segment .bss
 
@@ -63,43 +65,46 @@ call printf
 pop rax
 
 ;Display User Input Message
-push qword 99
 mov rax,0
 mov rdi, input_coeff
 call printf
 pop rax
 
+sub rsp, 1024
+
 ;Accept input of three numbers for the quadratic formula
 push qword -1
-push qword -2
-push qword -3
 mov rax, 0
 mov rdi, input_c
 mov rsi, rsp
-mov rdx, rsp
+mov rdx, rsp 
 add rdx, 8
 mov rcx, rsp
 add rcx, 16
 call scanf
 
 ;Implement isfloat.cpp
-mov rax, 0
 mov rdi, rsp
 call isfloat
+
+add rsp, 1024
+
 cmp rax, 0
 je invalidRoot
 
-mov rdi, [rsp+8]
 mov rax, 0
-call isfloat
-cmp rax, 0
-je invalidRoot
+mov rdi, rsp
+call atof
+movsd xmm5, xmm0
+mov rdi,rsp
+add rdi, 8
+call atof
+movsd xmm6, xmm0
+mov rdi, rsp
+add rdi,16
+movsd xmm7, xmm0
 
-mov rdi, [rsp+16]
-mov rax, 0
-call isfloat
-cmp rax, 0
-je invalidRoot
+
 
 ;Calculate the quadratic formula
 
@@ -156,3 +161,10 @@ je invalidRoot
 
 ;movsd xmm0, xmm14
 ;movsd xmm1, xmm15
+
+
+
+invalidRoot:
+mov rax,0
+mov rdi, error_message
+call printf 
