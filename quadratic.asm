@@ -73,7 +73,7 @@ pop rax
 sub rsp, 1024
 
 ;Accept input of three numbers for the quadratic formula
-push qword -1
+push qword 99
 mov rax, 0
 mov rdi, input_c
 mov rsi, rsp
@@ -86,10 +86,11 @@ call scanf
 ;Implement isfloat.cpp
 mov rdi, rsp
 call isfloat
+mov r15, rax
 
 add rsp, 1024
 
-cmp rax, 0
+cmp r15, 0
 je invalidRoot
 
 mov rax, 0
@@ -104,7 +105,10 @@ mov rdi, rsp
 add rdi,16
 movsd xmm7, xmm0
 
-
+invalidRoot:
+mov rax,0
+mov rdi, error_message
+call printf 
 
 ;Calculate the quadratic formula
 
@@ -164,7 +168,3 @@ movsd xmm7, xmm0
 
 
 
-invalidRoot:
-mov rax,0
-mov rdi, error_message
-call printf 
