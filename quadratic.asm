@@ -84,14 +84,14 @@ add rcx, 16
 call scanf
 
 ;Implement isfloat.cpp
+;mov rax,0 
 mov rdi, rsp
 call isfloat
-mov r15, rax
 
 add rsp, 1024
 
-cmp r15, 0
-je invalidRoot
+;cmp rax, 0
+;je invalidRoot
 
 mov rax, 0
 mov rdi, rsp
@@ -105,10 +105,7 @@ mov rdi, rsp
 add rdi,16
 movsd xmm7, xmm0
 
-invalidRoot:
-mov rax,0
-mov rdi, error_message
-call printf 
+ 
 
 ;Calculate the quadratic formula
 
@@ -168,3 +165,8 @@ call printf
 
 
 
+invalidRoot:
+mov rax,0
+mov rdi, error_message
+call printf
+pop rax
