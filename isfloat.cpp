@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include <iostream>
-#include "isdigit.cpp"
+#include <ctype.h>
 
 extern "C" bool isfloat(char []);
 

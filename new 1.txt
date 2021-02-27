@@ -1,0 +1,124 @@
+input_c db "%s%s%s", 0
+
+;Display User Input Message
+;mov rax,0
+;mov rdi, input_coeff
+;call printf
+
+
+
+;Accept input of three numbers for the quadratic formula
+;mov rax, 0
+;mov rdi, stringform
+;mov rsi, rsp
+;call scanf
+
+add rsp, 256
+
+;Implement isfloat.cpp
+;mov rdi, rsp
+;call isfloat
+;mov r13, rax
+;cmp r13, 0
+;je invalidRoot
+
+
+
+
+
+
+;invalidRoot:
+;mov rax, 0
+;mov rsi, error_message
+;call printf
+
+
+
+;input 3 
+;mov rdi, input_c
+;mov rsi, rsp
+;mov rdx, rsp 
+;add rdx, 8
+;mov rcx, rsp
+;add rcx, 16
+;call scanf
+
+;convert to float
+;mov rax, 0
+;mov rdi, rsp
+;call atof
+;movsd xmm5, xmm0
+;mov rdi,rsp
+;add rdi, 8
+;call atof
+;movsd xmm6, xmm0
+;mov rdi, rsp
+;add rdi,16
+;movsd xmm7, xmm0
+
+
+
+
+
+
+
+;Calculate the quadratic formula
+
+;a * c
+;movsd xmm8, xmm5
+;mulsd xmm8, xmm7
+
+;4*ac
+;cvtss2sd xmm3, dword [4]
+;mulsd xmm8, xmm3
+
+;b^2
+;mulsd xmm6, xmm6
+
+;b^2 - 4ac
+;movsd xmm9, xmm6
+;subsd xmm9, xmm8
+
+;sqrtd(b^2-4ac)
+;sqrtsd xmm10, xmm9
+
+;sqrtd(b^2-4ac) - b
+;movsd xmm11, xmm10
+;subsd xmm11, xmm6
+
+;sqrtd(b^2-4ac) + b
+;movsd xmm12, xmm10
+;addsd xmm12, xmm6
+
+;2a
+;cvtss2sd xmm4, dword [2]
+;mulsd xmm5, xmm4
+;movsd xmm13, xmm5
+
+;root 1 = (sqrtd(b^2-4ac) - b) / 2a
+;divsd xmm11, xmm13
+;movsd xmm14, xmm11
+
+;root 2 = (sqrtd(b^2-4ac) + b) / 2a
+;divsd xmm12, xmm5
+;movsd xmm15, xmm12
+
+;Display Exit Message 1
+;mov rax,0
+;mov rdi, output_equation
+;call printf
+;pop rax
+
+;Display Exit Message 2
+;mov rax,0
+;mov rdi, output_returncaller
+;call printf
+;pop rax
+
+;movsd xmm0, xmm14
+;movsd xmm1, xmm15
+
+
+
+
+

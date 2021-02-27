@@ -20,7 +20,7 @@
 ;  Programming languages: Four modules in C and one module in X86
 ;  Date program began: 2021-Feb-18
 ;  Date of last update: 2021-Feb-20
-;  Files in this program: second_degree.cpp, quad_library.cpp, isfloat.cpp, isdigit.cpp, quadratic.asm
+;  Files in this program: second_degree.c, quad_library.cpp, isfloat.cpp, isdigit.cpp, quadratic.asm
 ;  Status: In-progress
 ;
 ;This file
@@ -34,78 +34,131 @@ extern printf
 extern scanf
 extern atof
 extern stof
-extern  isfloat
-extern  quad_library
-
+extern isfloat
+extern quad_library
 global quads
 
 segment .data
 
 outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
-input_coeff db "Please enter the three floating point coefficients of a quadratic equation in the order a, b, c separated by white spaces. Then press enter: ", 10, 0
+input_coeff db "Please enter the three floating point coefficients of a quadratic equation.", 10, 0
+input1 db "Enter coefficient a: ", 10,0
+input2 db "Enter coefficient b: ", 10,0
+input3 db "Enter coefficient c: ", 10,0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 error_message db "Incorrect input. Please try again", 10, 0
 
-input_c db "%s%s%s", 0
-output_three_float db "%lf%lf%lf",0
-
+string1 db "%s",0
+string2 db "%s",0
+string3 db "%s",0
 
 segment .bss
 
 segment .text
+
 quads:
 
-push qword 0
+;Back up Registers
+push rbp
+mov rbp, rsp
+push rdi
+push rsi
+push rdx
+push rcx
+push r8
+push r9
+push r10
+push r11
+push r12
+push r13
+push r14
+push r15
+push rbx
+
+push qword -1
 
 ;Display Welcome Message
 mov rax,0
 mov rdi, outputpurpose
 call printf
-pop rax
 
-;Display User Input Message
+sub rsp, 512
+
+;Display User Input Message 
 mov rax,0
 mov rdi, input_coeff
 call printf
-pop rax
 
-sub rsp, 1024
+add rsp, 512
 
-;Accept input of three numbers for the quadratic formula
-push qword 99
-mov rax, 0
-mov rdi, input_c
-mov rsi, rsp
-mov rdx, rsp 
-add rdx, 8
-mov rcx, rsp
-add rcx, 16
+;Begin calling for and accepting inputs for the quadratic formula
+
+;Prompt for the first coefficient input
+mov qword rdi, input1
+mov qword rax, 0
+call printf
+
+;Input the first coefficient 
+mov qword rdi, string1
+push qword -1
+mov qword rsi, rsp
+mov qword rax, 0
 call scanf
+pop qword r12
 
 ;Implement isfloat.cpp
-;mov rax,0 
 mov rdi, rsp
 call isfloat
+mov r12, rax
+cmp r12, 0
+je invalidRoot
 
-add rsp, 1024
-
-;cmp rax, 0
-;je invalidRoot
-
+;Convert to float
 mov rax, 0
 mov rdi, rsp
 call atof
-movsd xmm5, xmm0
-mov rdi,rsp
-add rdi, 8
-call atof
-movsd xmm6, xmm0
-mov rdi, rsp
-add rdi,16
-movsd xmm7, xmm0
+movsd xmm5, [rsp]
 
- 
+;Prompt for the second coefficient input
+mov qword rdi, input2
+mov qword rax, 0
+call printf
+
+;Input the Second coefficient
+mov qword rdi, string2
+push qword 999
+mov qword rsi, rsp
+mov qword rax, 0
+call scanf
+pop qword r13
+
+;Implement isfloat.cpp
+;mov rdi, rsp
+;call isfloat
+;mov r13, rax
+;cmp r13, 0
+;je invalidRoot
+
+;Convert to float
+;mov rax, 0
+;mov rdi, rsp
+;call atof
+;movsd xmm6, [rsp]
+
+
+;Prompt for the third coefficient input
+;mov qword rdi, input3
+;mov qword rax, 0
+;call printf
+
+;Input the third coefficient
+;mov qword rdi, string3
+;push qword 999
+;mov qword rsi, rsp
+;mov qword rax, 0
+;call scanf
+;pop qword r15
 
 ;Calculate the quadratic formula
 
@@ -148,6 +201,12 @@ movsd xmm7, xmm0
 ;divsd xmm12, xmm5
 ;movsd xmm15, xmm12
 
+invalidRoot:
+mov rax, 0
+mov rsi, error_message
+call printf
+
+
 ;Display Exit Message 1
 ;mov rax,0
 ;mov rdi, output_equation
@@ -165,8 +224,21 @@ movsd xmm7, xmm0
 
 
 
-invalidRoot:
-mov rax,0
-mov rdi, error_message
-call printf
-pop rax
+;Restore Registers
+pop rax                                                      
+pop rbx                                                     
+pop r15                                                     
+pop r14                                                      
+pop r13                                                      
+pop r12                                                      
+pop r11                                                     
+pop r10                                                     
+pop r9                                                      
+pop r8                                                      
+pop rcx                                                     
+pop rdx                                                     
+pop rsi                                                     
+pop rdi                                                     
+pop rbp
+
+ret
