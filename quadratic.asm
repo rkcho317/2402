@@ -41,13 +41,17 @@ global quads
 segment .data
 
 outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
-input_coeff db "Please enter the three floating point coefficients of a quadratic equation in order of a, b, c each separated by a ws then Press enter: ", 10, 0
-
+input_coeff db "Please enter the three floating point coefficients of a quadratic equation.", 10, 0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 error_message db "Incorrect input. Please try again", 10, 0
 
-string1 db "%s",0
+string1 db "%s%s%s",0
+
+output_root db "%lf",0
+
+float4 dq 4.0
+float2 dq 2.0
 
 segment .bss
 
@@ -79,57 +83,114 @@ mov rax,0
 mov rdi, outputpurpose
 call printf
 
+sub rsp, 512
 
-;Begin calling for and accepting inputs for the quadratic formula
-mov rax, 0
+;Display User Input Message 
+mov rax,0
 mov rdi, input_coeff
 call printf
 
-;Input the coefficient 
-sub rsp, 512
+
+;Begin calling for and accepting inputs for the quadratic formula
+push qword -1
+push qword -2
+push qword -3
 mov rax, 0
 mov rdi, string1
 mov rsi, rsp
+mov rdx, rsp 
+add rdx, 8
+mov rcx, rsp
+add rcx, 16
 call scanf
 
+mov r10, [rsp]
+mov r11, [rsp+8]
+mov r12, [rsp+16]
+
+pop rax
+pop rax
+pop rax
+
+;coefficient a/r10 
 ;Implement isfloat.cpp
 mov rdi, rsp
+mov r10, rsp
 call isfloat
-
-cmp rax, 0
+;mov r10, rax
+cmp r10, 0
 je invalidRoot
 
-valid:
 ;Convert to float
 mov rax, 0
 mov rdi, rsp
+mov r10, rsp
 call atof
 movsd xmm15, xmm0
-mov r15, 0
-cvtsi2sd xmm8, r15
-ucomisd xmm8, xmm15
-je invlaid
+ucomisd xmm5, xmm15
+jmp end
 
+;coefficient b/r11
+;Implement isfloat.cpp
+mov rdi, rsp
+mov r11, rsp
+call isfloat
+mov r14, rax
+cmp r14,0
+je invalidRoot
+
+
+;Convert to float
+mov rax,0
+mov rdi, rsp
+mov r14, rsp
+call atof
+movsd xmm15,xmm0
+ucomisd xmm6, xmm15
+jmp end
+
+;coefficient c/r12
+;Implement isfloat.cpp
+mov rdi, rsp
+mov r12, rsp
+call isfloat
+mov r15, rax
+cmp r15,0
+je invalidRoot
+
+;Convert to float
+mov rax,0
+mov rdi, rsp
+mov r15, rsp
+call atof
+movsd xmm15,xmm0
+ucomisd xmm7, xmm15
 jmp end
 
 invalidRoot:
 mov rax, 0
 mov rsi, error_message
 call printf
-pop rax
 
 end:
 add rsp, 512
 
 ;Calculate the quadratic formula
 
+;debugging
+mov rax, 1
+mov rdi, output_root 
+movsd xmm0, xmm5
+call printf
+
 ;a * c
-;movsd xmm8, xmm5
-;mulsd xmm8, xmm7
+movsd xmm8, xmm5
+mulsd xmm8, xmm7
+
+
 
 ;4*ac
-;cvtss2sd xmm3, dword [4]
-;mulsd xmm8, xmm3
+;mulsd xmm8, [float4]
 
 ;b^2
 ;mulsd xmm6, xmm6
@@ -150,8 +211,7 @@ add rsp, 512
 ;addsd xmm12, xmm6
 
 ;2a
-;cvtss2sd xmm4, dword [2]
-;mulsd xmm5, xmm4
+;mulsd xmm5, [float2]
 ;movsd xmm13, xmm5
 
 ;root 1 = (sqrtd(b^2-4ac) - b) / 2a
@@ -163,9 +223,16 @@ add rsp, 512
 ;movsd xmm15, xmm12
 
 
+
 ;Display Exit Message 1
-;mov rax,0
+;push qword -1
+;push qword -2
+;push qword -3
+;mov rax,1
 ;mov rdi, output_equation
+;movsd xmm0, xmm5
+;movsd xmm1, xmm6
+;movsd xmm2, xmm7
 ;call printf
 ;pop rax
 
@@ -173,10 +240,9 @@ add rsp, 512
 ;mov rax,0
 ;mov rdi, output_returncaller
 ;call printf
-;pop rax
 
-;movsd xmm0, xmm14
-;movsd xmm1, xmm15
+
+;movsd xmm0, xmm15
 
 
 

@@ -1,20 +1,20 @@
 #include <stdio.h>
 #include <ctype.h>
 
-extern "C" bool isfloat(char []);
+extern "C" bool isfloat(char [ ]);
 
-bool isfloat(char a[]){
-	bool result = true;
-    bool b_result = false;
+bool isfloat(char w[ ])
+{   bool result = true;
+    bool onepoint = false;
     int start = 0;
-    if (a[0] == '-' || a[0] == '+') start = 1;
+    if (w[0] == '-' || w[0] == '+') start = 1;
     unsigned long int k = start;
-    while (!(a[k] == '\0') && result )
-    {    if (a[k] == '.' && !b_result) 
-               b_result = true;
+    while (!(w[k] == '\0') && result )
+    {    if (w[k] == '.' && !onepoint) 
+               onepoint = true;
          else
-               result = result && isdigit(a[k]) ; 
+               result = result && isdigit(w[k]) ; 
          k++;
      }
-     return result && b_result;
+     return result && onepoint;
 }

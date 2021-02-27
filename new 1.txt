@@ -23,17 +23,6 @@ add rsp, 256
 ;je invalidRoot
 
 
-
-
-
-
-;invalidRoot:
-;mov rax, 0
-;mov rsi, error_message
-;call printf
-
-
-
 ;input 3 
 ;mov rdi, input_c
 ;mov rsi, rsp
@@ -58,6 +47,88 @@ add rsp, 256
 
 
 
+;Prompt for the first coefficient input
+mov qword rdi, input1
+mov qword rax, 0
+call printf
+
+;Input the first coefficient 
+mov qword rdi, string1
+push qword -1
+mov qword rsi, rsp
+mov qword rax, 0
+call scanf
+pop qword r12
+
+;Implement isfloat.cpp
+mov rdi, rsp
+call isfloat
+mov r12, rax
+cmp r12, 0
+je invalidRoot
+
+valid1:
+;Convert to float
+mov rax, 0
+mov rdi, rsp
+call atof
+movsd xmm15, xmm0
+mov r12, 0
+cvtsi2sd xmm5, r12
+ucomisd xmm5, xmm15
+je invalidRoot
+
+jmp end
+
+
+;Prompt for the second coefficient input
+mov qword rdi, input2
+mov qword rax, 0
+call printf
+
+;Input the Second coefficient
+mov qword rdi, string2
+push qword 999
+mov qword rsi, rsp
+mov qword rax, 0
+call scanf
+pop qword r13
+
+;Implement isfloat.cpp
+;mov rdi, rsp
+;call isfloat
+;mov r13, rax
+;cmp r13, 0
+;je invalidRoot
+
+;Convert to float
+;mov rax, 0
+;mov rdi, rsp
+;call atof
+;movsd xmm6, [rsp]
+
+
+;Prompt for the third coefficient input
+;mov qword rdi, input3
+;mov qword rax, 0
+;call printf
+
+;Input the third coefficient
+;mov qword rdi, string3
+;push qword 999
+;mov qword rsi, rsp
+;mov qword rax, 0
+;call scanf
+;pop qword r15
+
+invalidRoot:
+mov rax, 0
+mov rsi, error_message
+call printf
+pop rax
+
+end:
+add rsp, 512
 
 
 
