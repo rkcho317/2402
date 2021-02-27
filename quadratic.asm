@@ -50,6 +50,8 @@ string1 db "%s%s%s",0
 
 output_root db "%lf",0
 
+output_str db "%s",0
+
 float4 dq 4.0
 float2 dq 2.0
 
@@ -111,6 +113,13 @@ mov r12, [rsp+16]
 pop rax
 pop rax
 pop rax
+
+;debugging
+mov rax, 1
+mov rdi, output_str 
+mov rsi, r10
+;movsd xmm0, xmm5
+call printf
 
 ;coefficient a/r10 
 ;Implement isfloat.cpp
@@ -177,11 +186,7 @@ add rsp, 512
 
 ;Calculate the quadratic formula
 
-;debugging
-mov rax, 1
-mov rdi, output_root 
-movsd xmm0, xmm5
-call printf
+
 
 ;a * c
 movsd xmm8, xmm5
