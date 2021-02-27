@@ -41,17 +41,13 @@ global quads
 segment .data
 
 outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
-input_coeff db "Please enter the three floating point coefficients of a quadratic equation.", 10, 0
-input1 db "Enter coefficient a: ", 10,0
-input2 db "Enter coefficient b: ", 10,0
-input3 db "Enter coefficient c: ", 10,0
+input_coeff db "Please enter the three floating point coefficients of a quadratic equation in order of a, b, c each separated by a ws then Press enter: ", 10, 0
+
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 error_message db "Incorrect input. Please try again", 10, 0
 
 string1 db "%s",0
-string2 db "%s",0
-string3 db "%s",0
 
 segment .bss
 
@@ -83,82 +79,47 @@ mov rax,0
 mov rdi, outputpurpose
 call printf
 
-sub rsp, 512
 
-;Display User Input Message 
-mov rax,0
+;Begin calling for and accepting inputs for the quadratic formula
+mov rax, 0
 mov rdi, input_coeff
 call printf
 
-add rsp, 512
-
-;Begin calling for and accepting inputs for the quadratic formula
-
-;Prompt for the first coefficient input
-mov qword rdi, input1
-mov qword rax, 0
-call printf
-
-;Input the first coefficient 
-mov qword rdi, string1
-push qword -1
-mov qword rsi, rsp
-mov qword rax, 0
+;Input the coefficient 
+sub rsp, 512
+mov rax, 0
+mov rdi, string1
+mov rsi, rsp
 call scanf
-pop qword r12
 
 ;Implement isfloat.cpp
 mov rdi, rsp
 call isfloat
-mov r12, rax
-cmp r12, 0
+
+cmp rax, 0
 je invalidRoot
 
+valid:
 ;Convert to float
 mov rax, 0
 mov rdi, rsp
 call atof
-movsd xmm5, [rsp]
+movsd xmm15, xmm0
+mov r15, 0
+cvtsi2sd xmm8, r15
+ucomisd xmm8, xmm15
+je invlaid
 
-;Prompt for the second coefficient input
-mov qword rdi, input2
-mov qword rax, 0
+jmp end
+
+invalidRoot:
+mov rax, 0
+mov rsi, error_message
 call printf
+pop rax
 
-;Input the Second coefficient
-mov qword rdi, string2
-push qword 999
-mov qword rsi, rsp
-mov qword rax, 0
-call scanf
-pop qword r13
-
-;Implement isfloat.cpp
-;mov rdi, rsp
-;call isfloat
-;mov r13, rax
-;cmp r13, 0
-;je invalidRoot
-
-;Convert to float
-;mov rax, 0
-;mov rdi, rsp
-;call atof
-;movsd xmm6, [rsp]
-
-
-;Prompt for the third coefficient input
-;mov qword rdi, input3
-;mov qword rax, 0
-;call printf
-
-;Input the third coefficient
-;mov qword rdi, string3
-;push qword 999
-;mov qword rsi, rsp
-;mov qword rax, 0
-;call scanf
-;pop qword r15
+end:
+add rsp, 512
 
 ;Calculate the quadratic formula
 
@@ -200,11 +161,6 @@ pop qword r13
 ;root 2 = (sqrtd(b^2-4ac) + b) / 2a
 ;divsd xmm12, xmm5
 ;movsd xmm15, xmm12
-
-invalidRoot:
-mov rax, 0
-mov rsi, error_message
-call printf
 
 
 ;Display Exit Message 1
