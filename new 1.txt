@@ -4,6 +4,19 @@ quadratic equation. Once we get the roots from that equation, we determine how
 many valid ones are there.
 
 
+;debugging
+mov rax, 1
+mov rdi, output_root
+movsd xmm0, xmm5
+call printf
+
+;debugging
+;mov rax, 1
+;mov rdi, output_root
+;movsd xmm0, xmm5
+;call printf
+
+
 input_c db "%s%s%s", 0
 
 ;Display User Input Message

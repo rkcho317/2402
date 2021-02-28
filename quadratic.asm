@@ -38,6 +38,9 @@ extern atof
 extern stof
 extern isfloat
 extern quad_library
+extern show_no_root
+extern show_one_root
+extern show_two_root
 global quads
 
 segment .data
@@ -116,13 +119,11 @@ pop rax
 pop rax
 
 
-
 ;coefficient a/r10 
 ;Implement isfloat.cpp
 mov rdi, rsp
 mov r10, rsp
 call isfloat
-;mov r10, rax
 cmp r10, 0
 je invalidRoot
 
@@ -133,7 +134,7 @@ mov r10, rsp
 call atof
 movsd xmm15, xmm0
 ucomisd xmm5, xmm15
-jmp end
+jmp see
 
 
 ;coefficient b/r11
@@ -153,7 +154,7 @@ mov r14, rsp
 call atof
 movsd xmm15,xmm0
 ucomisd xmm6, xmm15
-jmp end
+jmp see
 
 ;coefficient c/r12
 ;Implement isfloat.cpp
@@ -171,29 +172,21 @@ mov r15, rsp
 call atof
 movsd xmm15,xmm0
 ucomisd xmm7, xmm15
-jmp end
+jmp see
 
 invalidRoot:
 mov rax, 0
 mov rsi, error_message
 call printf
 
-end:
+see:
 add rsp, 512
 
 ;Calculate the quadratic formula
 
-;debugging
-;mov rax, 1
-;mov rdi, output_root
-;movsd xmm0, xmm5
-;call printf
-
 ;a * c
 movsd xmm8, xmm5
 mulsd xmm8, xmm7
-
-
 
 ;4*ac
 mulsd xmm8, [float4]
@@ -228,7 +221,43 @@ movsd xmm14, xmm11
 divsd xmm12, xmm5
 movsd xmm15, xmm12
 
+;Display how many roots by calling quad_library
+push qword 99
+mov rax, 1
+movsd xmm0, xmm14
+ucomisd xmm0, xmm1
+je noroot
+jg rootz
 
+rootz:
+mov rax,0
+movsd xmm1, xmm15
+ucomisd xmm0, xmm1
+je oneroot
+ja tworoot
+
+noroot:
+mov rax,0
+mov rdi, rsp
+call show_no_root
+pop rax
+jmp end
+
+oneroot:
+mov rax,0
+mov rdi, rsp
+call show_one_root
+pop rax
+jmp end
+
+tworoot:
+mov rax,0
+mov rdi, rsp
+call show_two_root
+pop rax
+jmp end
+
+end:
 
 ;Display Exit Message 1
 push qword 99
@@ -240,46 +269,13 @@ movsd xmm2, xmm7
 call printf
 pop rax
 
-;Display how many roots by calling quad_library
-push qword 99
-;push qword -1
-;push qword -2
-mov rax, 0
-movsd xmm0, xmm14
-movsd xmm1, xmm15
-call quad_library
-cmp xmm0, xmm1
-jg oneroot
-je tworoot
-jl noroot
-
-tworoot:
-mov rax,0
-mov rdi, rsp
-call show_two_root
-call printf 
-
-oneroot:
-mov rax,0
-mov rdi, rsp
-call show_one_root
-call printf
-
-noroot:
-mov rax,0
-mov rdi, rsp
-call show_no_root
-call printf
 
 ;Display Exit Message 2
 mov rax,0
 mov rdi, output_returncaller
 call printf
 
-
 movsd xmm0, xmm15
-
-
 
 ;Restore Registers
 pop rax                                                      
