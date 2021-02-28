@@ -1,3 +1,9 @@
+Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn 
+an input of a string in to three floats then use those floats to calculate a 
+quadratic equation. Once we get the roots from that equation, we determine how 
+many valid ones are there.
+
+
 input_c db "%s%s%s", 0
 
 ;Display User Input Message

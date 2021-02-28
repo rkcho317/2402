@@ -1,12 +1,14 @@
 ;****************************************************************************************************************************
-;Program name: "Quadratic".  This program demonstrates the
-;
-; Copyright (C) 2021 Rosa Cho.                                                                           *
+;Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn 
+;an input of a string in to three floats then use those floats to calculate a 
+;quadratic equation. Once we get the roots from that equation, we determine 
+;how many valid ones are there.
+;Copyright (C) 2021 Rosa Cho.                                                                           *
 ;                                                                                                                           *
-;This file is part of the software program "Quadratics".                                                                   *
-;Quadratics is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License   *
+;This file is part of the software program "Quadratic Computation and Validation".                                                                   *
+;Quadratic Computation and Validation is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License   *
 ;version 3 as published by the Free Software Foundation.                                                                    *
-;Quadratics is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied          *
+;Quadratic Computation and Validation is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied          *
 ;warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.     *
 ;A copy of the GNU General Public License v3 is available here:  <https:;www.gnu.org/licenses/>.                            *
 ;****************************************************************************************************************************
@@ -16,10 +18,10 @@
 ;  Author email: rkcho317@csu.fullerton.edu
 ;
 ;Program information
-;  Program name: Quadratics
-;  Programming languages: Four modules in C and one module in X86
+;  Program name: Quadratic Computation and Validation
+;  Programming languages: Three modules in C++, one in C, and one module in X86
 ;  Date program began: 2021-Feb-18
-;  Date of last update: 2021-Feb-20
+;  Date of last update: 2021-Feb-28
 ;  Files in this program: second_degree.c, quad_library.cpp, isfloat.cpp, isdigit.cpp, quadratic.asm
 ;  Status: In-progress
 ;
@@ -246,24 +248,27 @@ mov rax, 0
 movsd xmm0, xmm14
 movsd xmm1, xmm15
 call quad_library
-cmp xmm0, xmm0
-je one root
-jg tworoot
+cmp xmm0, xmm1
+jg oneroot
+je tworoot
 jl noroot
 
 tworoot:
 mov rax,0
-mov rdi, show_two_root
+mov rdi, rsp
+call show_two_root
 call printf 
 
 oneroot:
 mov rax,0
-mov rdi, show_one_root
+mov rdi, rsp
+call show_one_root
 call printf
 
 noroot:
 mov rax,0
-mov rdi, show_no_root
+mov rdi, rsp
+call show_no_root
 call printf
 
 ;Display Exit Message 2
