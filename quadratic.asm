@@ -50,7 +50,6 @@ string1 db "%s%s%s",0
 
 output_root db "%lf",0
 
-output_str db "%s",0
 
 float4 dq 4.0
 float2 dq 2.0
@@ -114,12 +113,7 @@ pop rax
 pop rax
 pop rax
 
-;debugging
-mov rax, 1
-mov rdi, output_str 
-mov rsi, r10
-;movsd xmm0, xmm5
-call printf
+
 
 ;coefficient a/r10 
 ;Implement isfloat.cpp
@@ -138,6 +132,7 @@ call atof
 movsd xmm15, xmm0
 ucomisd xmm5, xmm15
 jmp end
+
 
 ;coefficient b/r11
 ;Implement isfloat.cpp
@@ -186,7 +181,11 @@ add rsp, 512
 
 ;Calculate the quadratic formula
 
-
+;debugging
+;mov rax, 1
+;mov rdi, output_root
+;movsd xmm0, xmm5
+;call printf
 
 ;a * c
 movsd xmm8, xmm5
@@ -195,59 +194,85 @@ mulsd xmm8, xmm7
 
 
 ;4*ac
-;mulsd xmm8, [float4]
+mulsd xmm8, [float4]
 
 ;b^2
-;mulsd xmm6, xmm6
+mulsd xmm6, xmm6
 
 ;b^2 - 4ac
-;movsd xmm9, xmm6
-;subsd xmm9, xmm8
+movsd xmm9, xmm6
+subsd xmm9, xmm8
 
 ;sqrtd(b^2-4ac)
-;sqrtsd xmm10, xmm9
+sqrtsd xmm10, xmm9
 
 ;sqrtd(b^2-4ac) - b
-;movsd xmm11, xmm10
-;subsd xmm11, xmm6
+movsd xmm11, xmm10
+subsd xmm11, xmm6
 
 ;sqrtd(b^2-4ac) + b
-;movsd xmm12, xmm10
-;addsd xmm12, xmm6
+movsd xmm12, xmm10
+addsd xmm12, xmm6
 
 ;2a
-;mulsd xmm5, [float2]
-;movsd xmm13, xmm5
+mulsd xmm5, [float2]
+movsd xmm13, xmm5
 
 ;root 1 = (sqrtd(b^2-4ac) - b) / 2a
-;divsd xmm11, xmm13
-;movsd xmm14, xmm11
+divsd xmm11, xmm13
+movsd xmm14, xmm11
 
 ;root 2 = (sqrtd(b^2-4ac) + b) / 2a
-;divsd xmm12, xmm5
-;movsd xmm15, xmm12
+divsd xmm12, xmm5
+movsd xmm15, xmm12
 
 
 
 ;Display Exit Message 1
+push qword 99
+mov rax, 0
+mov rdi, output_equation
+movsd xmm0, xmm5
+movsd xmm1, xmm6
+movsd xmm2, xmm7
+call printf
+pop rax
+
+;Display how many roots by calling quad_library
+push qword 99
 ;push qword -1
 ;push qword -2
-;push qword -3
-;mov rax,1
-;mov rdi, output_equation
-;movsd xmm0, xmm5
-;movsd xmm1, xmm6
-;movsd xmm2, xmm7
-;call printf
-;pop rax
+mov rax, 0
+movsd xmm0, xmm14
+movsd xmm1, xmm15
+call quad_library
+cmp xmm0, xmm0
+je one root
+jg tworoot
+jl noroot
+
+tworoot:
+mov rax,0
+mov rdi, show_two_root
+call printf 
+
+oneroot:
+mov rax,0
+mov rdi, show_one_root
+call printf
+
+noroot:
+mov rax,0
+mov rdi, show_no_root
+call printf
 
 ;Display Exit Message 2
-;mov rax,0
-;mov rdi, output_returncaller
-;call printf
+mov rax,0
+mov rdi, output_returncaller
+call printf
 
 
-;movsd xmm0, xmm15
+movsd xmm0, xmm15
 
 
 
