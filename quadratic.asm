@@ -204,9 +204,10 @@ sqrtsd xmm9, xmm9
 mov r8,0
 cvtsi2sd xmm10, r8
 ucomisd xmm9, xmm10          ;compare the determinant to 0
+jb nega_det                  ;if the determinant is <0
 je zero_det                  ;if the determinant is =0
-jg posi_det                  ;if the determinant is >0
-jl nega_det                  ;if the determinant is <0
+ja posi_det                  ;if the determinant is >0
+
 
 nega_det:
 jmp noroot
