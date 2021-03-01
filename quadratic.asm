@@ -1,7 +1,7 @@
 ;****************************************************************************************************************************
-;Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn 
-;an input of a string in to three floats then use those floats to calculate a 
-;quadratic equation. Once we get the roots from that equation, we determine 
+;Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn
+;an input of a string in to three floats then use those floats to calculate a
+;quadratic equation. Once we get the roots from that equation, we determine
 ;how many valid ones are there.
 ;Copyright (C) 2021 Rosa Cho.                                                                           *
 ;                                                                                                                           *
@@ -103,7 +103,7 @@ call printf
 
 ;Accept input for the first coefficient
 mov rax, 0
-mov rdi, string1   ;%s 
+mov rdi, string1   ;%s
 mov rsi, rsp
 call scanf
 
@@ -120,6 +120,56 @@ mov rdi, rsp
 call atof
 movsd xmm15, xmm0
 movsd xmm5, xmm15
+
+;Prompt for the second coefficient input
+mov qword rdi, inputstring2
+mov qword rax, 0
+call printf
+
+;Accept input for the second coefficient
+mov rax, 0
+mov rdi, string2   ;%s
+mov rsi, rsp
+call scanf
+
+;Implement isfloat.cpp to see if the second coefficient input is a floating number
+mov rax,0
+mov rdi, rsp
+call isfloat
+cmp rax, 0
+je invalidRoot
+
+;Convert the second coefficient input to float
+mov rax, 1
+mov rdi, rsp
+call atof
+movsd xmm15, xmm0
+movsd xmm6, xmm15
+
+;Prompt for the third coefficient input
+mov qword rdi, inputstring3
+mov qword rax, 0
+call printf
+
+;Accept input for the third coefficient
+mov rax, 0
+mov rdi, string3   ;%s
+mov rsi, rsp
+call scanf
+
+;Implement isfloat.cpp to see if the third coefficient input is a floating number
+mov rax,0
+mov rdi, rsp
+call isfloat
+cmp rax, 0
+je invalidRoot
+
+;Convert the third coefficient input to float
+mov rax, 1
+mov rdi, rsp
+call atof
+movsd xmm15, xmm0
+movsd xmm7, xmm15
 
 invalidRoot:
 mov rax, 0
@@ -194,7 +244,7 @@ jmp end
 oneroot:
 mov rax,0
 mov rdi, rsp
-call show_one_root 
+call show_one_root
 pop rax
 
 jmp end
@@ -226,20 +276,20 @@ call printf
 movsd xmm0, xmm14
 
 ;Restore Registers
-pop rax                                                      
-pop rbx                                                     
-pop r15                                                     
-pop r14                                                      
-pop r13                                                      
-pop r12                                                      
-pop r11                                                     
-pop r10                                                     
-pop r9                                                      
-pop r8                                                      
-pop rcx                                                     
-pop rdx                                                     
-pop rsi                                                     
-pop rdi                                                     
+pop rax
+pop rbx
+pop r15
+pop r14
+pop r13
+pop r12
+pop r11
+pop r10
+pop r9
+pop r8
+pop rcx
+pop rdx
+pop rsi
+pop rdi
 pop rbp
 
 ret
