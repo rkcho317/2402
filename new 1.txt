@@ -1,6 +1,6 @@
-Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn 
-an input of a string in to three floats then use those floats to calculate a 
-quadratic equation. Once we get the roots from that equation, we determine how 
+Program name: "Quadratic Computation and Validation".  This program demonstrates how to turn
+an input of a string in to three floats then use those floats to calculate a
+quadratic equation. Once we get the roots from that equation, we determine how
 many valid ones are there.
 
 
@@ -38,10 +38,10 @@ add rsp, 256
 ;je invalidRoot
 
 
-;input 3 
+;input 3
 ;mov rdi, input_c
 ;mov rsi, rsp
-;mov rdx, rsp 
+;mov rdx, rsp
 ;add rdx, 8
 ;mov rcx, rsp
 ;add rcx, 16
@@ -67,7 +67,7 @@ mov qword rdi, input1
 mov qword rax, 0
 call printf
 
-;Input the first coefficient 
+;Input the first coefficient
 mov qword rdi, string1
 push qword -1
 mov qword rsi, rsp
@@ -147,7 +147,7 @@ add rsp, 512
 
 ;Most recent version of inputting the 3 DAMN THINGS!
 
-;Display User Input Message 
+;Display User Input Message
 mov rax,0
 mov rdi, input_coeff
 call printf
@@ -159,7 +159,7 @@ push qword -3
 mov rax, 0
 mov rdi, string1
 mov rsi, rsp
-mov rdx, rsp 
+mov rdx, rsp
 add rdx, 8
 mov rcx, rsp
 add rcx, 16
@@ -174,7 +174,7 @@ pop rax
 pop rax
 
 
-;coefficient a/r10 
+;coefficient a/r10
 ;Implement isfloat.cpp
 mov rdi, rsp
 mov r10, rsp
@@ -234,7 +234,36 @@ mov rax, 0
 mov rsi, error_message
 call printf
 
+
+;Display how many roots by calling quad_library
+push qword 99
+mov rax, 1
+movsd xmm0, xmm14
+ucomisd xmm0, xmm1
+je noroot
+jg rootz
+
+rootz:
+mov rax,0
+movsd xmm1, xmm15
+ucomisd xmm0, xmm1
+je oneroot
+ja tworoot
+
+;Call show_one_root
+mov rax,1
+mov rdi, rsp
+call show_one_root
+movsd xmm0, xmm14
+jmp end
+
+;Call show_two_root
+mov rax,0
+mov rdi, rsp
+call show_two_root
+movsd xmm0, xmm14
+movsd xmm1, xmm15
+jmp end
+
 see:
 add rsp, 512
-
-

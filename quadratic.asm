@@ -190,26 +190,75 @@ mulsd xmm8, xmm7
 mulsd xmm8, [float4]
 
 ;b^2
-mulsd xmm6, xmm6
+movsd xmm9, xmm6
+mulsd xmm9, xmm6
 
 ;b^2 - 4ac
-movsd xmm9, xmm6
 subsd xmm9, xmm8
 
-;sqrtd(b^2-4ac)
-sqrtsd xmm10, xmm9
+;sqrtd(b^2-4ac) aka the determinant
+sqrtsd xmm9, xmm9
 
+
+;Determine how many roots there are based off of the determinant's value
+mov r8,0
+cvtsi2sd xmm10, r8
+ucomisd xmm9, xmm10          ;compare the determinant to 0
+je zero_det                  ;if the determinant is =0
+jg posi_det                  ;if the determinant is >0
+jl nega_det                  ;if the determinant is <0
+
+nega_det:
+jmp noroot
+
+zero_det:
+jmp oneroot
+
+posi_det:
+jmp tworoot
+
+noroot:
+mov rax,1
+mov rdi, rsp
+call show_no_root
+jmp end
+
+oneroot:
+;Calculate
+;sqrtd(b^2-4ac) + b
+movsd xmm11, xmm9
+addsd xmm11, xmm6
+
+;2a
+movsd xmm13, xmm5
+mulsd xmm13, [float2]
+
+;root = (sqrtd(b^2-4ac) + b) / 2a
+divsd xmm11, xmm13
+movsd xmm14, xmm11
+jmp show_one
+
+show_one:
+;Call show_one_root
+mov rax, 1
+mov rdi, rsp
+movsd xmm0, xmm14
+call show_one_root
+jmp end
+
+tworoot:
+;calculate
 ;sqrtd(b^2-4ac) - b
-movsd xmm11, xmm10
+movsd xmm11, xmm9
 subsd xmm11, xmm6
 
 ;sqrtd(b^2-4ac) + b
-movsd xmm12, xmm10
+movsd xmm12, xmm9
 addsd xmm12, xmm6
 
 ;2a
-mulsd xmm5, [float2]
 movsd xmm13, xmm5
+mulsd xmm13, [float2]
 
 ;root 1 = (sqrtd(b^2-4ac) - b) / 2a
 divsd xmm11, xmm13
@@ -219,54 +268,26 @@ movsd xmm14, xmm11
 divsd xmm12, xmm5
 movsd xmm15, xmm12
 
-;Display how many roots by calling quad_library
-push qword 99
+jmp show_two
+
+show_two:
 mov rax, 1
+mov rdi, rsp
 movsd xmm0, xmm14
-ucomisd xmm0, xmm1
-je noroot
-jg rootz
-
-rootz:
-mov rax,0
 movsd xmm1, xmm15
-ucomisd xmm0, xmm1
-je oneroot
-ja tworoot
-
-noroot:
-mov rax,0
-mov rdi, rsp
-call show_no_root
-pop rax
-jmp end
-
-oneroot:
-mov rax,0
-mov rdi, rsp
-call show_one_root
-pop rax
-
-jmp end
-
-tworoot:
-mov rax,0
-mov rdi, rsp
 call show_two_root
-pop rax
 jmp end
 
 end:
-
 ;Display Exit Message 1
-push qword 99
-mov rax, 0
+mov rax, 1
+mov rdi, rsp
 mov rdi, output_equation
 movsd xmm0, xmm5
 movsd xmm1, xmm6
 movsd xmm2, xmm7
 call printf
-pop rax
+
 
 ;Display Exit Message 2
 mov rax,0
