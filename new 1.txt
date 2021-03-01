@@ -10,14 +10,12 @@ mov rdi, output_root
 movsd xmm0, xmm5
 call printf
 
-;debugging
-;mov rax, 1
-;mov rdi, output_root
-;movsd xmm0, xmm5
-;call printf
+input_coeff db "Please enter the three floating point coefficients of a quadratic equation.", 10, 0
 
 
 input_c db "%s%s%s", 0
+
+string1 db "%s%s%s",0
 
 ;Display User Input Message
 ;mov rax,0
@@ -145,6 +143,98 @@ call printf
 pop rax
 
 end:
+add rsp, 512
+
+;Most recent version of inputting the 3 DAMN THINGS!
+
+;Display User Input Message 
+mov rax,0
+mov rdi, input_coeff
+call printf
+
+;Inputting User inputs
+push qword -1
+push qword -2
+push qword -3
+mov rax, 0
+mov rdi, string1
+mov rsi, rsp
+mov rdx, rsp 
+add rdx, 8
+mov rcx, rsp
+add rcx, 16
+call scanf
+
+mov r10, [rsp]
+mov r11, [rsp+8]
+mov r12, [rsp+16]
+
+pop rax
+pop rax
+pop rax
+
+
+;coefficient a/r10 
+;Implement isfloat.cpp
+mov rdi, rsp
+mov r10, rsp
+call isfloat
+cmp r10, 0
+je invalidRoot
+
+;Convert to float
+mov rax, 0
+mov rdi, rsp
+mov r10, rsp
+call atof
+movsd xmm15, xmm0
+ucomisd xmm5, xmm15
+jmp see
+
+
+;coefficient b/r11
+;Implement isfloat.cpp
+mov rdi, rsp
+mov r11, rsp
+call isfloat
+mov r14, rax
+cmp r14,0
+je invalidRoot
+
+
+;Convert to float
+mov rax,0
+mov rdi, rsp
+mov r14, rsp
+call atof
+movsd xmm15,xmm0
+ucomisd xmm6, xmm15
+jmp see
+
+;coefficient c/r12
+;Implement isfloat.cpp
+mov rdi, rsp
+mov r12, rsp
+call isfloat
+mov r15, rax
+cmp r15,0
+je invalidRoot
+
+;Convert to float
+mov rax,0
+mov rdi, rsp
+mov r15, rsp
+call atof
+movsd xmm15,xmm0
+ucomisd xmm7, xmm15
+jmp see
+
+invalidRoot:
+mov rax, 0
+mov rsi, error_message
+call printf
+
+see:
 add rsp, 512
 
 

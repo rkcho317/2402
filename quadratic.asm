@@ -35,9 +35,7 @@
 extern printf
 extern scanf
 extern atof
-extern stof
 extern isfloat
-extern quad_library
 extern show_no_root
 extern show_one_root
 extern show_two_root
@@ -46,12 +44,16 @@ global quads
 segment .data
 
 outputpurpose db "This program will find the roots of the quadratic equation ", 10, 0
-input_coeff db "Please enter the three floating point coefficients of a quadratic equation.", 10, 0
+inputstring1 db "Please enter the first coefficient or coefficient a: ", 10, 0
+inputstring2 db "Please enter the second coefficient or coefficient b: ", 10, 0
+inputstring3 db "Please enter the third coefficient or coefficient c: ", 10, 0
 output_equation db "Thank you. The equation is %5.3lf x^2 + %5.3lf x + %5.3lf = 0.0", 10, 0
 output_returncaller db "One of these roots will be returned to the caller function.", 10, 0
 error_message db "Incorrect input. Please try again", 10, 0
 
-string1 db "%s%s%s",0
+string1 db "%s",0
+string2 db "%s",0
+string3 db "%s",0
 
 output_root db "%lf",0
 
@@ -91,93 +93,39 @@ call printf
 
 sub rsp, 512
 
-;Display User Input Message 
-mov rax,0
-mov rdi, input_coeff
-call printf
-
 
 ;Begin calling for and accepting inputs for the quadratic formula
-push qword -1
-push qword -2
-push qword -3
+
+;Prompt for the first coefficient input
+mov qword rdi, inputstring1
+mov qword rax, 0
+call printf
+
+;Accept input for the first coefficient
 mov rax, 0
-mov rdi, string1
+mov rdi, string1   ;%s 
 mov rsi, rsp
-mov rdx, rsp 
-add rdx, 8
-mov rcx, rsp
-add rcx, 16
 call scanf
 
-mov r10, [rsp]
-mov r11, [rsp+8]
-mov r12, [rsp+16]
-
-pop rax
-pop rax
-pop rax
-
-
-;coefficient a/r10 
-;Implement isfloat.cpp
+;Implement isfloat.cpp to see if the first coefficient input is a floating number
+mov rax,0
 mov rdi, rsp
-mov r10, rsp
 call isfloat
-cmp r10, 0
+cmp rax, 0
 je invalidRoot
 
-;Convert to float
-mov rax, 0
+;Convert the first coefficient input to float
+mov rax, 1
 mov rdi, rsp
-mov r10, rsp
 call atof
 movsd xmm15, xmm0
-ucomisd xmm5, xmm15
-jmp see
-
-
-;coefficient b/r11
-;Implement isfloat.cpp
-mov rdi, rsp
-mov r11, rsp
-call isfloat
-mov r14, rax
-cmp r14,0
-je invalidRoot
-
-
-;Convert to float
-mov rax,0
-mov rdi, rsp
-mov r14, rsp
-call atof
-movsd xmm15,xmm0
-ucomisd xmm6, xmm15
-jmp see
-
-;coefficient c/r12
-;Implement isfloat.cpp
-mov rdi, rsp
-mov r12, rsp
-call isfloat
-mov r15, rax
-cmp r15,0
-je invalidRoot
-
-;Convert to float
-mov rax,0
-mov rdi, rsp
-mov r15, rsp
-call atof
-movsd xmm15,xmm0
-ucomisd xmm7, xmm15
-jmp see
+movsd xmm5, xmm15
 
 invalidRoot:
 mov rax, 0
 mov rsi, error_message
 call printf
+jmp see
 
 see:
 add rsp, 512
@@ -246,8 +194,9 @@ jmp end
 oneroot:
 mov rax,0
 mov rdi, rsp
-call show_one_root
+call show_one_root 
 pop rax
+
 jmp end
 
 tworoot:
@@ -269,13 +218,12 @@ movsd xmm2, xmm7
 call printf
 pop rax
 
-
 ;Display Exit Message 2
 mov rax,0
 mov rdi, output_returncaller
 call printf
 
-movsd xmm0, xmm15
+movsd xmm0, xmm14
 
 ;Restore Registers
 pop rax                                                      
